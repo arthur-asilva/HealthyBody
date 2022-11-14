@@ -1,17 +1,18 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
-import MultiSelect from 'react-native-multiple-select';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native"
+import MultiSelect from 'react-native-multiple-select'
 import * as Animatable from "react-native-animatable"
-import { style, primaryColor } from "../../../assets/styles/MainStyle";
+import { style, primaryColor } from "../../../assets/styles/MainStyle"
 
-import { useNavigation } from "@react-navigation/native"
+// import { useNavigation } from "@react-navigation/native"
 import BottomMenu from "../Constants/BottomMenu";
 
 // LogBox.ignoreLogs(['new NativeEventEmitter'])
 
-export default function UserController() {
+export default function UserController(props) {
 
-  const navigation = useNavigation()
+  // const navigation = useNavigation()
+  const [record, setRecord] = useState(props.route.params.recordId)
 
   const DATA = [
     { id: 1, name: 'Especialidade 1' },
@@ -69,7 +70,7 @@ export default function UserController() {
           </TouchableOpacity>
 
         </Animatable.View>
-        <BottomMenu />
+        <BottomMenu createAndEditRecord={'UserController'}  />
     </View>
   );
 }

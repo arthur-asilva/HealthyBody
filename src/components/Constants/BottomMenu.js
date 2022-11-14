@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
 import * as Animatable from "react-native-animatable"
 import { style, primaryColor } from "../../../assets/styles/MainStyle"
@@ -7,15 +7,22 @@ import { useNavigation } from "@react-navigation/native"
 
 // LogBox.ignoreLogs(['new NativeEventEmitter'])
 
-export default function BottomMenu() {
+export default function BottomMenu(props) {
+
+    const navigation = useNavigation()
+
+    useEffect(() => {
+        console.log(props)
+    })
+
     return(
         <Animatable.View animation="fadeInUp" style={localStyle.bottomMenuContainer}>
-            <TouchableOpacity style={localStyle.bottomMenuButton}>
+            <TouchableOpacity style={localStyle.bottomMenuButton} onPress={() => {navigation.navigate(props.createAndEditRecord)}}>
                 <Ionicons name="add-circle" size={20} color="white" />
                 <Text style={localStyle.bottomMenuText}>CRIAR</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={localStyle.bottomMenuButton}>
+            <TouchableOpacity style={localStyle.bottomMenuButton} onPress={() => {navigation.navigate(props.createAndEditRecord, {recordId: "14"})}} >
                 <Ionicons name="pencil" size={20} color="white" />
                 <Text style={localStyle.bottomMenuText}>EDITAR</Text>
             </TouchableOpacity>
