@@ -13,8 +13,9 @@ export default function Login() {
   const nav = useNavigation()
 
   const [isEnabled, setIsEnabled] = useState(false);
-  const [email, setEmail] = useState();
-  const [pass, setPass] = useState();
+  const [session, setSession] = useState({user: {email: '', access_group: ''}})
+  const [email, setEmail] = useState('');
+  const [pass, setPass] = useState('');
   const [accessGroup, setAccessGroup] = useState('PRO');
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
 
@@ -28,8 +29,8 @@ export default function Login() {
     }).then(resposta => resposta.json()).then( (json) => {
       if(Object.keys(json).includes('erro')){ Alert.alert('Algo não saiu como esperado.', json.erro, [{text: 'OK'},], {cancelable: false}, ) } 
       else {
-        const user = { email: email, access_group: accessGroup, token: json.token }
-        CreateSession(user).then(() => { nav.navigate(firstRoute[accessGroup]) })
+        // const user = { email: email, access_group: accessGroup, token: json.token }
+        CreateSession(json).then(() => nav.navigate(firstRoute[accessGroup]))
       }
     }).catch((error) => {
       Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK'},], {cancelable: false}, )
@@ -42,10 +43,12 @@ export default function Login() {
 
   useEffect(() => {
     GetSession().then(response => {
-      if(response != null){
-        nav.navigate(firstRoute[JSON.parse(response).access_group])
+      const data = JSON.parse(response)
+      if(data !== null){
+        setSession(data)
+        nav.navigate(firstRoute[data.user.access_group])
       }
-    })
+    }).catch((error) => console.log(error))
   }, [])
 
   return (

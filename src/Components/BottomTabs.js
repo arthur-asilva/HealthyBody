@@ -11,7 +11,7 @@ export default function BottomTabs(){
     
     const tabs = [
         {name: 'home', component: 'TeacherDash'},
-        {name: 'calendar', component: 'Calendar'},
+        // {name: 'calendar', component: 'Calendar'},
         {name: 'user', component: 'Profile'},
     ]
 
@@ -41,7 +41,8 @@ const localstyles = StyleSheet.create({
     container: {
         backgroundColor: primaryColor,
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        // justifyContent: 'space-between',
+        justifyContent: 'space-around',
         padding: 10,
         position: 'absolute',
         bottom: 0,

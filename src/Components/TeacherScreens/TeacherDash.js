@@ -32,6 +32,7 @@ export default function TeacherDash(props) {
                     setTownhouses(getDistinctTownhouses(json))
                 })
                 .catch((error) => {
+                    console.log(error)
                     Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK'},], {cancelable: false}, )
                 })
             }
@@ -49,15 +50,16 @@ export default function TeacherDash(props) {
                 <ScrollView style={localstyles.scrollView} horizontal={true}>
 
                     {
-                        townhouses.map((item) =>
-                            <View key={item.id} style={localstyles.scrollViewCard}>
-                                <Text style={localstyles.scrollCardTitle}>{item.name}</Text>
-                                <Text style={localstyles.scrollCardAddress}>{item.address}</Text>
-                                <TouchableOpacity style={localstyles.scrollCardButton} onPress={() => {navigation.navigate('TeacherClassesByTown', {id: item.id})}}>
-                                    <Text style={localstyles.scrollCardButtonText}>Ver turmas</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )
+                        townhouses.length > 0 &&
+                            townhouses.map((item) =>
+                                <View key={item.id} style={localstyles.scrollViewCard}>
+                                    <Text style={localstyles.scrollCardTitle}>{item.name}</Text>
+                                    <Text style={localstyles.scrollCardAddress}>{item.address}</Text>
+                                    <TouchableOpacity style={localstyles.scrollCardButton} onPress={() => {navigation.navigate('TeacherClassesByTown', {id: item.id})}}>
+                                        <Text style={localstyles.scrollCardButtonText}>Ver turmas</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
                     }
 
                 </ScrollView>
@@ -67,15 +69,16 @@ export default function TeacherDash(props) {
                 <Text style={localstyles.todayClassesHeader}>Turmas de hoje</Text>
                 <ScrollView>
                     {
-                        classes.map((item)=> {
-                            if(item.weekday == weekdayNumber)
-                                return(
-                                    <TouchableOpacity key={item.id} style={{flexDirection: 'row', borderColor: '#ccc', borderBottomWidth: 0.5}} onPress={() => navigation.navigate('StudentsByClass', {id: item.id})}>
-                                        <Text style={localstyles.item}>{item.schedule}</Text>
-                                        <Text style={localstyles.item}>{item.service}</Text>
-                                    </TouchableOpacity>
-                                )
-                            })
+                        classes.length > 0 &&
+                            classes.map((item)=> {
+                                if(item.weekday == weekdayNumber)
+                                    return(
+                                        <TouchableOpacity key={item.id} style={{flexDirection: 'row', borderColor: '#ccc', borderBottomWidth: 0.5}} onPress={() => navigation.navigate('StudentsByClass', {id: item.id})}>
+                                            <Text style={localstyles.item}>{item.schedule}</Text>
+                                            <Text style={localstyles.item}>{item.service}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                })
                     }
                 </ScrollView>
             </View>
@@ -91,7 +94,7 @@ export default function TeacherDash(props) {
 const getDistinctTownhouses = (data) => {
     let tempData = []
     let result = []
-
+    
     data.forEach(element => {
         if(!tempData.includes(element.client)){
             tempData.push(element.client)
