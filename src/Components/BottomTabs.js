@@ -11,8 +11,8 @@ export default function BottomTabs(){
     
     const tabs = [
         {name: 'home', component: 'TeacherDash'},
-        // {name: 'calendar', component: 'Calendar'},
-        {name: 'user', component: 'Profile'},
+        {name: 'list', component: 'TeacherSchedules'},
+        {name: 'user', component: 'Profile'}
     ]
 
     const changeTab = (value) => {

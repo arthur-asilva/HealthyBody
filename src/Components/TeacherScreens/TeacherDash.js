@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { HOST } from "../../DataKeys";
 import BottomTabs from '../BottomTabs'
+import { DeleteSession } from '../../SessionManager'
 
 
 
@@ -23,20 +24,30 @@ export default function TeacherDash(props) {
 
     useEffect(() => {
         getSession().then(response => {
-            let token = JSON.parse(response).token
+            if(response != undefined){
+                let token = JSON.parse(response).token
             
-            fetch(`${HOST}/api/user/teacher/${token}/classes/`)
-                .then(resposta => resposta.json())
-                .then( (json) => {
-                    setClasses(json)
-                    setTownhouses(getDistinctTownhouses(json))
-                })
-                .catch((error) => {
-                    console.log(error)
-                    Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK'},], {cancelable: false}, )
-                })
+                fetch(`${HOST}/api/user/teacher/${token}/classes/`)
+                    .then(resposta => resposta.json())
+                    .then( (json) => {
+                        setClasses(json)
+                        setTownhouses(getDistinctTownhouses(json))
+                    })
+                    .catch((error) => {
+                        Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK', onPress: () => {
+                            DeleteSession().then(() => {
+                                navigation.navigate('Login')
+                            })
+                        }},], {cancelable: false}, )
+                    })
+            } else {
+                Alert.alert('Algo não saiu como esperado.', 'Seu usuário não foi encontrado, tente realizar o login novamente.', [{text: 'OK', onPress: () => {
+                    DeleteSession().then(() => {
+                        navigation.navigate('Login')
+                    }).catch((error) => console.log(error))
+                }},], {cancelable: false}, )
             }
-        )
+        })
     }, [])
 
     return (
@@ -71,7 +82,7 @@ export default function TeacherDash(props) {
                     {
                         classes.length > 0 &&
                             classes.map((item)=> {
-                                if(item.weekday == weekdayNumber)
+                                if(item.weekday.days.includes(weekdayNumber))
                                     return(
                                         <TouchableOpacity key={item.id} style={{flexDirection: 'row', borderColor: '#ccc', borderBottomWidth: 0.5}} onPress={() => navigation.navigate('StudentsByClass', {id: item.id})}>
                                             <Text style={localstyles.item}>{item.schedule}</Text>
@@ -82,6 +93,7 @@ export default function TeacherDash(props) {
                     }
                 </ScrollView>
             </View>
+            
             
             <BottomTabs />
 

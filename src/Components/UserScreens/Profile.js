@@ -14,6 +14,7 @@ import { HOST } from '../../DataKeys'
 export default function Profile(){
 
     const [session, setSession] = useState({user: {email: '', access_group: '', skills: {services: []}}})
+    const [availability, setAvailability] = useState([])
     const [image, setImage] = useState('...')
     const navigation = useNavigation()
 
@@ -21,6 +22,7 @@ export default function Profile(){
         GetSession().then(response => {
             setSession(JSON.parse(response))
             console.log(JSON.parse(response))
+            setAvailability(JSON.parse(response).user.availability.availabilities)
         }).catch(error => console.log(error))
     }, [])
 
@@ -101,22 +103,26 @@ export default function Profile(){
                 <Text style={{fontSize: 16, fontWeight: 'bold', textTransform: 'uppercase'}}>{session.user.name}</Text>
                 <Text>{session.user.email}</Text>
                 <Text>Acesso como: {session.user.access_group == 'PRO' ? 'Professor' : 'Aluno'}</Text>
-                <Text style={{marginTop: 20, fontWeight: 'bold'}}>Especialidades: </Text>
-                <Text>
-                    { session.user.skills.services.map((value) => '✓ ' + value + '\n') }
-                </Text>
-                <Text style={{marginTop: 20, fontWeight: 'bold'}}>Disponibilidade: </Text>
-                <View style={{justifyContent: 'space-between', flexDirection: 'row', marginHorizontal: 10, marginTop: 5}}>
-                    {['D', 'S', 'T', 'Q', 'Q', 'S', 'S'].map((item, index) =>
-                        <Text style={[session.user.availability.availabilities.includes(index.toString()) ? localstyles.availabilityCheck: localstyles.availabilityOptions]}>{item}</Text>
-                    )}
-                </View>
-                <Text style={{marginTop: 20, fontWeight: 'bold'}}>Sobre o professor: </Text>
-                <ScrollView style={{height: 100}}>
-                    <Text>
-                        { session.user.description }
-                    </Text>
-                </ScrollView>
+                {session.user.access_group == 'PRO' &&
+                    <>
+                        <Text style={{marginTop: 20, fontWeight: 'bold'}}>Especialidades: </Text>
+                        <Text>
+                            { session.user.skills.services.map((value) => value + '      ') }
+                        </Text>
+                        <Text style={{marginTop: 20, fontWeight: 'bold'}}>Disponibilidade: </Text>
+                        <View style={{justifyContent: 'space-between', flexDirection: 'row', marginHorizontal: 10, marginTop: 5}}>
+                            {['S', 'T', 'Q', 'Q', 'S', 'S', 'D'].map((item, index) =>
+                                <Text key={index} style={[availability.includes(index.toString()) ? localstyles.availabilityCheck: localstyles.availabilityOptions]}>{item}</Text>
+                            )}
+                        </View>
+                        <Text style={{marginTop: 20, fontWeight: 'bold'}}>Sobre o professor: </Text>
+                        <ScrollView style={{height: 100}}>
+                            <Text>
+                                { session.user.description }
+                            </Text>
+                        </ScrollView>
+                    </>
+                }
             </View>
 
             <TouchableOpacity style={localstyles.logout} onPress={() => logout()}>
@@ -124,7 +130,9 @@ export default function Profile(){
                 <Icon name='sign-out' size={20} color={'#fff'} />
             </TouchableOpacity>
 
-            <BottomTabs />
+            {session.user.access_group == 'PRO' &&
+                <BottomTabs />
+            }
         </View>
     )
 
