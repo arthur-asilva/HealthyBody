@@ -79,18 +79,17 @@ export default function ClassDetails({ route, navigation }) {
         Alert.alert('Gerenciamento de matrícula', 'Tem certeza de que deseja continuar?', [
             {text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel', },
             {text: 'OK', onPress: () => {
-                // fetch(`${HOST}/api/user/${session.token}/subscribe/${id}`).then( (json) => {
-                //     Alert.alert('Controle de matrícula.', 'Operação realizada com sucesso.', [{text: 'OK'},], {cancelable: false}, )
-                //     if(route.params.status){
-                //         localNav.navigate('UnsubscribeComment', {'classDetails': route.params.classDetails, 'session': session })
-                //     } else {
-                //         localNav.navigate('StudentDash', {forceUpdate: new Date().getTime()})
-                //     }
-                // }).catch((error) => {
-                //     Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK'},], {cancelable: false}, )
-                //     console.log('this: ', error.message)
-                // })
-                localNav.navigate('UnsubscribeComment', {'classDetails': route.params.classDetails, 'session': session })
+                fetch(`${HOST}/api/user/${session.token}/subscribe/${id}`).then( (json) => {
+                    Alert.alert('Controle de matrícula.', 'Operação realizada com sucesso.', [{text: 'OK'},], {cancelable: false}, )
+                    if(route.params.status){
+                        localNav.navigate('UnsubscribeComment', {'classDetails': route.params.classDetails, 'session': session })
+                    } else {
+                        localNav.navigate('StudentDash', {forceUpdate: new Date().getTime()})
+                    }
+                }).catch((error) => {
+                    Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK'},], {cancelable: false}, )
+                    console.log('this: ', error.message)
+                })
             }},
         ])
     }

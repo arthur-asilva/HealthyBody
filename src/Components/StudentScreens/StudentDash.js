@@ -161,7 +161,13 @@ export default function StudentDash({ route, navigation }) {
                 </View>
             </Animatable.View>
 
-            {visibleCard == 'IMC' &&
+            {visibleCard == 'Classes' &&
+                <TouchableOpacity style={localstyles.bottomButton} onPress={() => navigation.navigate('Notices', {session: session})}>
+                    <Icon name={'comment-o'} size={30} color={'#fff'} />
+                </TouchableOpacity>
+            }
+
+{visibleCard == 'IMC' &&
                 <TouchableOpacity style={localstyles.bottomButton} onPress={() => navigation.navigate('StudentSchedule', {session: session})}>
                     <Icon name={'calendar'} size={30} color={'#fff'} />
                 </TouchableOpacity>

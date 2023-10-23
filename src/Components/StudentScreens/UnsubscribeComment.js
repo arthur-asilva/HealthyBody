@@ -68,7 +68,7 @@ export default function UnsubscribeComment({ route, navigation }) {
                 </View>
             </Animatable.View>
             <View style={{width: '90%', marginHorizontal: '5%', paddingVertical: 20}}>
-                <ScrollView>
+                <ScrollView automaticallyAdjustKeyboardInsets={true}>
                     <Text style={{fontSize: 18, textAlign: 'justify'}}>Para nós, nada é mais importante que o seu bem estar. Nos ajude a melhorar o serviço que prestamos para você, descreva o motivo da sua saída dessa turma.</Text>
                     <TextInput onChangeText={(value) => setComment(value)} placeholder='Digite aqui...' style={{width: '100%', height: 150, borderWidth: 1, borderColor: '#ccc', borderRadius: 5, textAlignVertical: 'top', padding: 10}}></TextInput>
                     <Text style={{fontSize: 18, textAlign: 'justify'}}>Sua privacidade é importante para nós. Deseja se identificar?</Text>
