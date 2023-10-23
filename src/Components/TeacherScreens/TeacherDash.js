@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { HOST } from "../../DataKeys";
 import BottomTabs from '../BottomTabs'
+import { DeleteSession } from '../../SessionManager'
 
 
 
@@ -23,19 +24,30 @@ export default function TeacherDash(props) {
 
     useEffect(() => {
         getSession().then(response => {
-            let token = JSON.parse(response).token
+            if(response != undefined){
+                let token = JSON.parse(response).token
             
-            fetch(`${HOST}/api/user/teacher/${token}/classes/`)
-                .then(resposta => resposta.json())
-                .then( (json) => {
-                    setClasses(json)
-                    setTownhouses(getDistinctTownhouses(json))
-                })
-                .catch((error) => {
-                    Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK'},], {cancelable: false}, )
-                })
+                fetch(`${HOST}/api/user/teacher/${token}/classes/`)
+                    .then(resposta => resposta.json())
+                    .then( (json) => {
+                        setClasses(json)
+                        setTownhouses(getDistinctTownhouses(json))
+                    })
+                    .catch((error) => {
+                        Alert.alert('Algo não saiu como esperado.', 'Confira sua conexão de rede e tente novamente.', [{text: 'OK', onPress: () => {
+                            DeleteSession().then(() => {
+                                navigation.navigate('Login')
+                            })
+                        }},], {cancelable: false}, )
+                    })
+            } else {
+                Alert.alert('Algo não saiu como esperado.', 'Seu usuário não foi encontrado, tente realizar o login novamente.', [{text: 'OK', onPress: () => {
+                    DeleteSession().then(() => {
+                        navigation.navigate('Login')
+                    }).catch((error) => console.log(error))
+                }},], {cancelable: false}, )
             }
-        )
+        })
     }, [])
 
     return (
@@ -49,15 +61,16 @@ export default function TeacherDash(props) {
                 <ScrollView style={localstyles.scrollView} horizontal={true}>
 
                     {
-                        townhouses.map((item) =>
-                            <View key={item.id} style={localstyles.scrollViewCard}>
-                                <Text style={localstyles.scrollCardTitle}>{item.name}</Text>
-                                <Text style={localstyles.scrollCardAddress}>{item.address}</Text>
-                                <TouchableOpacity style={localstyles.scrollCardButton} onPress={() => {navigation.navigate('TeacherClassesByTown', {id: item.id})}}>
-                                    <Text style={localstyles.scrollCardButtonText}>Ver turmas</Text>
-                                </TouchableOpacity>
-                            </View>
-                        )
+                        townhouses.length > 0 &&
+                            townhouses.map((item) =>
+                                <View key={item.id} style={localstyles.scrollViewCard}>
+                                    <Text style={localstyles.scrollCardTitle}>{item.name}</Text>
+                                    <Text style={localstyles.scrollCardAddress}>{item.address}</Text>
+                                    <TouchableOpacity style={localstyles.scrollCardButton} onPress={() => {navigation.navigate('TeacherClassesByTown', {id: item.id})}}>
+                                        <Text style={localstyles.scrollCardButtonText}>Ver turmas</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )
                     }
 
                 </ScrollView>
@@ -67,18 +80,20 @@ export default function TeacherDash(props) {
                 <Text style={localstyles.todayClassesHeader}>Turmas de hoje</Text>
                 <ScrollView>
                     {
-                        classes.map((item)=> {
-                            if(item.weekday == weekdayNumber)
-                                return(
-                                    <TouchableOpacity key={item.id} style={{flexDirection: 'row', borderColor: '#ccc', borderBottomWidth: 0.5}} onPress={() => navigation.navigate('StudentsByClass', {id: item.id})}>
-                                        <Text style={localstyles.item}>{item.schedule}</Text>
-                                        <Text style={localstyles.item}>{item.service}</Text>
-                                    </TouchableOpacity>
-                                )
-                            })
+                        classes.length > 0 &&
+                            classes.map((item)=> {
+                                if(item.weekday.days.includes(weekdayNumber))
+                                    return(
+                                        <TouchableOpacity key={item.id} style={{flexDirection: 'row', borderColor: '#ccc', borderBottomWidth: 0.5}} onPress={() => navigation.navigate('StudentsByClass', {id: item.id})}>
+                                            <Text style={localstyles.item}>{item.schedule}</Text>
+                                            <Text style={localstyles.item}>{item.service}</Text>
+                                        </TouchableOpacity>
+                                    )
+                                })
                     }
                 </ScrollView>
             </View>
+            
             
             <BottomTabs />
 
@@ -91,7 +106,7 @@ export default function TeacherDash(props) {
 const getDistinctTownhouses = (data) => {
     let tempData = []
     let result = []
-
+    
     data.forEach(element => {
         if(!tempData.includes(element.client)){
             tempData.push(element.client)

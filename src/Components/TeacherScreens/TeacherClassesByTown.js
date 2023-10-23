@@ -80,8 +80,8 @@ export default function TeacherClassesByTown({ route, navigation }) {
                 <Text style={localstyles.todayClassesHeader}>{ weekdays.filter(day => day.number == classInDay)[0].name }</Text>
                 <ScrollView>
 
-                    {
-                        classes.filter(item => item.weekday == classInDay).map((item) => 
+                    {classes.length > 0 &&
+                        classes.filter(item => item.weekday.days.includes(classInDay)).map((item) => 
                             <TouchableOpacity key={item.id} style={{flexDirection: 'row', borderColor: '#ccc', borderBottomWidth: 0.5}} onPress={() => localNav.navigate('StudentsByClass', {id: item.id})}>
                                 <Text style={localstyles.item}>{item.schedule}</Text>
                                 <Text style={localstyles.item}>{item.service}</Text>
