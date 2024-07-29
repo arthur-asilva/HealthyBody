@@ -14,6 +14,7 @@ import StudentSchedule from '../Components/StudentScreens/StudentSchedules'
 import TeacherSchedules from '../Components/TeacherScreens/TeacherSchedules'
 import UnsubscribeComment from '../Components/StudentScreens/UnsubscribeComment'
 import Notices from '../Components/StudentScreens/Notices'
+import InitScreen from '../Components/InitScreen'
 
 
 const Stack = createNativeStackNavigator()
@@ -22,9 +23,10 @@ const Stack = createNativeStackNavigator()
 export default function Routes(){
     return(
         // <Stack.Navigator initialRouteName="Login" drawerContent={props => <DrawerMenu {...props}/>}>
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="InitScreen">
 
             <Stack.Screen name="Login" component={Login} options={{ headerShown: false }}/>
+            <Stack.Screen name="InitScreen" component={InitScreen} options={{ headerShown: false }}/>
             <Stack.Screen name="TeacherDash" component={TeacherDash} options={{ headerShown: false }}/>
             <Stack.Screen name="TeacherClassesByTown" component={TeacherClassesByTown} options={{ headerShown: false }}/>
             <Stack.Screen name="StudentsByClass" component={StudentsByClass} options={{ headerShown: false }}/>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Text, View, StyleSheet, Image, TouchableOpacity, Alert, ScrollView } from 'react-native'
+import { Text, View, StyleSheet, Image, Linking, TouchableOpacity, Alert, ScrollView } from 'react-native'
 import BottomTabs from '../BottomTabs'
 import { primaryColor, styles } from '../../MainStyles'
 import * as Animatable from "react-native-animatable"
@@ -21,8 +21,13 @@ export default function Profile(){
     useEffect(() => {
         GetSession().then(response => {
             setSession(JSON.parse(response))
-            console.log(JSON.parse(response))
-            setAvailability(JSON.parse(response).user.availability.availabilities)
+
+            const hasAvailability = JSON.parse(response).user
+
+            if(Object.keys(hasAvailability).includes('availability')){
+                setAvailability(JSON.parse(response).user.availability.availabilities)
+            }
+
         }).catch(error => console.log(error))
     }, [])
 
@@ -44,15 +49,24 @@ export default function Profile(){
 
     const logout = () => {
         Alert.alert('Encerrar a sessão.', 'Tem certeza que deseja continuar?', [{text: 'Cancelar', style: 'cancel'}, {text: 'OK', onPress: () => {
-            DeleteSession().then(() => {
-                navigation.navigate('Login')
-            })
+          DeleteSession().then(() => {
+              navigation.navigate('Login')
+          })
+        }}])
+    }
+
+
+    const deleteAccount = () => {
+        Alert.alert('Excluir conta.', 'Você está tentando excluir sua conta, todos os seus dados serão removidos da nossa base de dados, tem certeza de que deseja continuar?', [{text: 'Cancelar', style: 'cancel'}, {text: 'OK', onPress: () => {
+          Linking.openURL(`${HOST}/delete_account/${session.token}/`).then(() => {
+            DeleteSession().then(() => {  navigation.navigate('Login')  })
+          })
         }}])
     }
 
 
     const changeProfileImage = (photo) => {
-        
+
         let data = { email: session.user.email, photo: photo, access_group: session.user.access_group }
 
         fetch(`${HOST}/api/user/${session.token}/changephoto/`, { method: 'POST',
@@ -73,14 +87,14 @@ export default function Profile(){
 
             <Animatable.View animation="fadeInDown" delay={100} style={styles.headerCard}>
                 <View style={{flexDirection: 'row', marginBottom: -20, alignItems: 'center'}}>
-                    { image === '...' && 
+                    { image === '...' &&
                         <Image style={localstyles.image} source={require('../../../assets/images/default_user_icon.png')} />
                     }
 
-                    { image !== '...' && 
+                    { image !== '...' &&
                         <Image style={localstyles.image} source={{uri: image}} />
                     }
-                    
+
                     <View>
                         <Text style={localstyles.headerCardTitle}>{session.user.email.split('@')[0]}</Text>
                         <Text style={localstyles.headerCardSubTitle}>{session.user.access_group == 'PRO' ? 'Professor' : 'Aluno'}</Text>
@@ -125,10 +139,19 @@ export default function Profile(){
                 }
             </View>
 
-            <TouchableOpacity style={localstyles.logout} onPress={() => logout()}>
-                <Text style={{color: '#fff', marginRight: 10 }}>Sair</Text>
-                <Icon name='sign-out' size={20} color={'#fff'} />
-            </TouchableOpacity>
+            <View style={localstyles.logoutAndDelete}>
+
+              <TouchableOpacity style={localstyles.delete} onPress={() => deleteAccount()}>
+                  <Text style={{color: '#eb2f06', marginRight: 10 }}>Excluir</Text>
+                  <Icon name='trash-o' size={20} color={'#eb2f06'} />
+              </TouchableOpacity>
+
+              <TouchableOpacity style={localstyles.logout} onPress={() => logout()}>
+                  <Text style={{color: '#fff', marginRight: 10 }}>Sair</Text>
+                  <Icon name='sign-out' size={20} color={'#fff'} />
+              </TouchableOpacity>
+
+            </View>
 
             {session.user.access_group == 'PRO' &&
                 <BottomTabs />
@@ -172,6 +195,15 @@ const localstyles = StyleSheet.create({
         borderRadius: 100,
         marginRight: 20
     },
+    logoutAndDelete: {
+      position: 'absolute',
+      bottom: 80,
+      width: '90%',
+      margin: '5%',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      flexDirection: 'row'
+    },
     logout: {
         backgroundColor: '#eb2f06',
         padding: 10,
@@ -179,10 +211,15 @@ const localstyles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         flexDirection: 'row',
-        position: 'absolute',
-        bottom: 80,
-        left: '5%',
-        width: '90%'
+        width: '40%'
+    },
+    delete: {
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row',
+        width: '40%'
     },
     changePassword: {
         borderRadius: 5,

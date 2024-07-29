@@ -4,7 +4,7 @@ const session_name = 'session'
 
 export const CreateSession = async (data) => {
   await AsyncStorage.setItem(session_name, JSON.stringify(data))
-  console.log('Session created: ' + JSON.stringify(data))
+  // console.log('Session created: ' + JSON.stringify(data))
 }
 
 export const GetSession = async () => {
@@ -18,7 +18,7 @@ export const SetSession = async (data) => {
     session = JSON.parse(response)
     session.user.photo = data
   }).catch((error) => console.log(error))
-  
+
   await AsyncStorage.setItem(session_name, JSON.stringify(session))
 }
 

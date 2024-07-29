@@ -1,6 +1,6 @@
 import { styles, primaryColor } from '../MainStyles'
 import React, { useEffect, useState } from 'react'
-import { View, Text, StyleSheet, Switch, TouchableOpacity, TextInput, Alert } from "react-native"
+import { Keyboard, View, Text, StyleSheet, Switch, Linking, TouchableOpacity, TextInput, Alert } from "react-native"
 import * as Animatable from "react-native-animatable"
 import { useNavigation } from "@react-navigation/native"
 import { HOST } from '../DataKeys'
@@ -18,6 +18,7 @@ export default function Login() {
   const [pass, setPass] = useState('');
   const [accessGroup, setAccessGroup] = useState('PRO');
   const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
   const firstRoute = { 'ALU': 'StudentDash', 'PRO': 'TeacherDash' }
 
@@ -49,6 +50,24 @@ export default function Login() {
         nav.navigate(firstRoute[data.user.access_group])
       }
     }).catch((error) => console.log(error))
+
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true); // or some other action
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false); // or some other action
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    }
   }, [])
 
   return (
@@ -85,6 +104,12 @@ export default function Login() {
         </TouchableOpacity>
 
       </Animatable.View>
+
+      {!isKeyboardVisible &&
+        <TouchableOpacity onPress={() => Linking.openURL('http://hbassesp.com/privacy/')} style={{position: 'absolute', width: '100%', bottom: 30}}>
+          <Text style={{color: primaryColor, textAlign: 'center'}}>Termos de uso e privacidade</Text>
+        </TouchableOpacity>
+      }
 
     </View>
   );
